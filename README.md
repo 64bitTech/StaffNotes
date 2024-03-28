@@ -8,9 +8,9 @@ Notes are stored based on user UUID so will persist username changes.
 Notes can be made for players who have never joined the server
 
 ## Commands:
-/notes Add <PlayerName> <NoteType> <Note>  
-/notes Remove <PlayerName> [NoteType]  
-/notes Get <PlayerName> [NoteType]  
+/notes Add \<PlayerName\> \<NoteType\> \<Note\>  
+/notes Remove \<PlayerName\> [NoteType]  
+/notes Get \<PlayerName\> [NoteType]  
 /notes Get All  
 
 ## Permissions:
@@ -18,4 +18,4 @@ notes.default&emsp;&emsp;&nbsp;Plugin won't listen to you without this permissio
 notes.add&emsp;&emsp;&emsp;&nbsp;&nbsp;Gives permissions to add notes  
 notes.remove&emsp;&emsp;Gives permissions to remove notes  
 notes.view&emsp;&emsp;&emsp;&nbsp;Gives permissions to get notes  
-notes.view.all&emsp;&emsp;Gives permissions to get all notes  
+notes.view.all&emsp;&emsp;Gives permissions to get all notes 
