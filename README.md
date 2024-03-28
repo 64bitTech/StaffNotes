@@ -18,4 +18,9 @@ notes.default&emsp;&emsp;&nbsp;Plugin won't listen to you without this permissio
 notes.add&emsp;&emsp;&emsp;&nbsp;&nbsp;Gives permissions to add notes  
 notes.remove&emsp;&emsp;Gives permissions to remove notes  
 notes.view&emsp;&emsp;&emsp;&nbsp;Gives permissions to get notes  
-notes.view.all&emsp;&emsp;Gives permissions to get all notes 
+notes.view.all&emsp;&emsp;Gives permissions to get all notes  
+
+## ToDo
+- Remove depreciated player.sendMessage()
+- Comment code
+- Verify all code paths
