@@ -1,8 +1,8 @@
 package com.staffnotes;
 import com.staffnotes.Listeners.ChatListener;
 import com.staffnotes.classes.NotesDatabase;
-import com.staffnotes.classes.TabComplete;
-import com.staffnotes.commands.CmdExecuter;
+import com.staffnotes.Listeners.TabComplete;
+import com.staffnotes.Listeners.CmdExecuter;
 import com.staffnotes.commands.Cmds;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;

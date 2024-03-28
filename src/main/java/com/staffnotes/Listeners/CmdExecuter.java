@@ -1,5 +1,6 @@
-package com.staffnotes.commands;
+package com.staffnotes.Listeners;
 
+import com.staffnotes.commands.Cmds;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;

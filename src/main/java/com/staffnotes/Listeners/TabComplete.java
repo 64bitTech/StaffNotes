@@ -1,4 +1,4 @@
-package com.staffnotes.classes;
+package com.staffnotes.Listeners;
 
 import com.staffnotes.Main;
 import org.bukkit.Bukkit;
