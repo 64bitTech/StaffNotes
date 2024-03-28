@@ -1,0 +1,54 @@
+#Set the available NoteTypes
+NoteTypes:
+  - Note
+  - BanEvasion
+
+
+###########################
+## String Format Section
+## Allows you to cusomtize the output of the plugin
+###########################
+
+##### Available variables (Not all variables are available for all strings)
+# %PlayerName% = Player name that the note is for
+# %NoteType% = NoteType stored in database (May or may not be one of the notes above depending on if types were added/removed
+# %NoteTypes% = Available note types from above
+# %Note% = the content of the note
+# %StaffName% = the name of the staff member that created the note
+# %CreatedAt% = the date the note was created
+# %DaysSince% = the number of days calculated from %CreatedAt%
+
+#Datestamp format
+DateTimeFormat: "dd-MM-yyyy HH:mm:ss"
+
+#Sets the display format for the list that gets output when using /notes get
+ListOutput: "§2§l- %PlayerName% : §3%NoteType% : §2%Note% §c(Created by %StaffName%)"
+#secondary list output used to show Note Numbers/IDs for removal
+ListOutput2: "§2§l- §9§l%NoteID% - §2§l%PlayerName% : §3%NoteType% : §2%Note% §c(Created by %StaffName% %DaysSince days ago) "
+ListHeader: "§3§nNotes found for: %PlayerName%"
+
+GetAll: "§3Getting all notes sorted by User and Date"
+
+#Error for when an user tries to use unspecified note type
+Error1: "§cYou may only use one of the configured NoteTypes: §2§n%NoteTypes%"
+#Error for when no notes are found
+Error2: "§cNo notes found for %PlayerName%"
+#Error shown for Exceptions
+Error3: "§cAn error occurred while retrieving notes. Contact an Admin"
+#Error shown for target player not found
+Error4: "§c%PlayerName% does not exist, make sure you typed the name correctly"
+ErrorPermissions: "§cYou do not have permissions to run this command"
+
+#Strings specifically for the removal processes
+ErrorPlayerReq: "Error, you must provide a player name to run this command"
+Canceled: "§bNote removal has been Canceled"
+Canceled2: "§bInvalid Number entered in chat. Removal has been canceled"
+SuccessRemove: "§2Succesufully removed Note"
+FailedRemove: "§cFailed to remove Message"
+FailedRemove2: "§cYou've entered an invalid ID, Please only enter one of the available IDs"
+Info: "§3Please type the number of the entry you would like to remove"
+Info2: "§3or type Cancel to cancel"
+
+#Strings specifically for the add process
+FailedAdd: "§cFailed to add note for %PlayerName%"
+SuccessAdd: "§2Note for %PlayerName% added successfully."
