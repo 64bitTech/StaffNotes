@@ -21,6 +21,6 @@ notes.view&emsp;&emsp;&emsp;&nbsp;Gives permissions to get notes
 notes.view.all&emsp;&emsp;Gives permissions to get all notes  
 
 ## ToDo
-- Remove depreciated player.sendMessage()
+- Modify depreciated player.sendMessage()
 - Comment code
 - Verify all code paths
