@@ -3,7 +3,7 @@ import com.staffnotes.Listeners.ChatListener;
 import com.staffnotes.classes.NotesDatabase;
 import com.staffnotes.Listeners.TabComplete;
 import com.staffnotes.Listeners.CmdExecuter;
-import com.staffnotes.commands.Cmds;
+import com.staffnotes.commands.Commands;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -12,21 +12,21 @@ import org.bukkit.plugin.java.JavaPlugin;
 import java.io.File;
 import java.sql.SQLException;
 
-public final class Main extends JavaPlugin {
+public final class StaffNotes extends JavaPlugin {
     private FileConfiguration config;
     private final NotesDatabase notesDatabase = new NotesDatabase(this);
     private ChatListener chatListener = new ChatListener(this);
     public NotesDatabase getNotesDatabase(){
         return this.notesDatabase;
     }
-    public Cmds getCommands(){
-        return this.cmds;
+    public Commands getCommands(){
+        return this.commands;
     }
     public FileConfiguration getConfig(){
         return config;
     }
 
-    private Cmds cmds;
+    private Commands commands;
     public ChatListener getChatListener() {
         return chatListener;
     }
@@ -35,7 +35,7 @@ public final class Main extends JavaPlugin {
     public void onEnable() {
         getLogger().info("[StaffNotes] plugin is being enabled...");
         reloadConfig();
-        cmds = new Cmds(this);
+        commands = new Commands(this);
         // Register command
         File dataFolder = getDataFolder();
         if (!dataFolder.exists()) {

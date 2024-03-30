@@ -1,6 +1,6 @@
 package com.staffnotes.Listeners;
 
-import com.staffnotes.Main;
+import com.staffnotes.StaffNotes;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -13,7 +13,7 @@ import java.util.List;
 public class TabComplete implements TabCompleter {
 
     private FileConfiguration config;
-    public TabComplete(Main plugin){
+    public TabComplete(StaffNotes plugin){
         this.config = plugin.getConfig();
     }
     @Override

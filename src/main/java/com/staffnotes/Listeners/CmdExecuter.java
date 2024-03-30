@@ -1,16 +1,16 @@
 package com.staffnotes.Listeners;
 
-import com.staffnotes.commands.Cmds;
+import com.staffnotes.StaffNotes;
+import com.staffnotes.commands.Commands;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import com.staffnotes.Main;
+
 public class CmdExecuter implements CommandExecutor {
-    private Main plugin;
-    private Cmds cmds;
-    public CmdExecuter(Main plugin) {
-        this.cmds = plugin.getCommands();
+    private Commands commands;
+    public CmdExecuter(StaffNotes plugin) {
+        this.commands = plugin.getCommands();
     }
 
     @Override
@@ -30,31 +30,24 @@ public class CmdExecuter implements CommandExecutor {
                         sender.sendMessage("§cYou do not have permissions to run this command");
                         return true;
                     } else {
-                        return cmds.handleAddCommand((Player) sender, args);
+                        return commands.handleAddCommand((Player) sender, args);
                     }
                 case "get":
                     if (!sender.hasPermission("notes.view")) {
                         sender.sendMessage("§cYou do not have permissions to run this command");
                         return true;
                     } else {
-                        if (args.length >= 2){
-                            if (args[1].equalsIgnoreCase("all")) {
-                                if (!sender.hasPermission("notes.view.all")) {
-                                    sender.sendMessage("§cYou do not have permissions to run this command");
-                                    return true;
-                                } else {
-                                    return cmds.handleGetCommand((Player) sender);
-                                }
-                            }else {
-                                return cmds.handleGetCommand((Player) sender,args);
-                            }
-                        } else {
+                        if (args.length == 1 || (args.length == 2 && args[1].equalsIgnoreCase("all"))){
                             if (!sender.hasPermission("notes.view.all")) {
                                 sender.sendMessage("§cPlease enter a PlayerName");
                                 return true;
                             } else {
-                                return cmds.handleGetCommand((Player) sender);
+                                return commands.handleGetCommand((Player) sender);
                             }
+                        } else if (args.length >= 2){
+                            return commands.handleGetCommand((Player) sender,args);
+                        } else {
+                            return false;
                         }
                     }
                 case "remove":
@@ -62,7 +55,7 @@ public class CmdExecuter implements CommandExecutor {
                         sender.sendMessage("§cYou do not have permissions to run this command");
                         return true;
                     } else {
-                        return cmds.handleRemoveCommand((Player) sender, args);
+                        return commands.handleRemoveCommand((Player) sender, args);
                     }
                 default:
                     return false;
@@ -70,8 +63,4 @@ public class CmdExecuter implements CommandExecutor {
         }
         return false;
     }
-
-
-
-
 }

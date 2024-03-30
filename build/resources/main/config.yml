@@ -22,13 +22,13 @@ NoteTypes:
 DateTimeFormat: "dd-MM-yyyy HH:mm:ss"
 
 #Sets the display format for the list that gets output when using /notes get
-ListOutput: "§2§l- %PlayerName% : §3%NoteType% : §2%Note% §c(Created by %StaffName%)"
+ListOutput: "§2§l- %PlayerName% : §3%NoteType% : §2%Note% §c(Created by %StaffName% %DaysSince% days ago)"
 #secondary list output used to show Note Numbers/IDs for removal
-ListOutput2: "§2§l- §9§l%NoteID% - §2§l%PlayerName% : §3%NoteType% : §2%Note% §c(Created by %StaffName% %DaysSince days ago) "
+ListOutput_Remove: "§2§l- §9§l%NoteID% - §2§l%PlayerName% : §3%NoteType% : §2%Note% §c(Created by %StaffName% %DaysSince% days ago) "
 ListHeader: "§3§nNotes found for: %PlayerName%"
 
 GetAll: "§3Getting all notes sorted by User and Date"
-
+NoteTypeRequired: "§cYou must provide a Note Type to add a note. Configured NoteTypes: §2§n%NoteTypes%"
 #Error for when an user tries to use unspecified note type
 Error1: "§cYou may only use one of the configured NoteTypes: §2§n%NoteTypes%"
 #Error for when no notes are found
@@ -40,7 +40,7 @@ Error4: "§c%PlayerName% does not exist, make sure you typed the name correctly"
 ErrorPermissions: "§cYou do not have permissions to run this command"
 
 #Strings specifically for the removal processes
-ErrorPlayerReq: "Error, you must provide a player name to run this command"
+ErrorPlayerReq: "§cError, you must provide a player name to run this command"
 Canceled: "§bNote removal has been Canceled"
 Canceled2: "§bInvalid Number entered in chat. Removal has been canceled"
 SuccessRemove: "§2Succesufully removed Note"

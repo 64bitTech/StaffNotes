@@ -15,21 +15,23 @@ public class NotesDatabase {
     }
 
     public void connect() throws SQLException {
+        // connect to database if not already connected
         if (connection != null && !connection.isClosed()) {
             return;
         }
-
         connection = DriverManager.getConnection("jdbc:sqlite:" + plugin.getDataFolder().toPath().resolve("StaffNotes.db"));
         createTable();
     }
 
     public void disconnect() throws SQLException {
+        // disconnect from database
         if (connection != null && !connection.isClosed()) {
             connection.close();
         }
     }
 
     private void createTable() throws SQLException {
+        // create blank table if database was just created
         try (PreparedStatement statement = connection.prepareStatement(
                 """
                     CREATE TABLE IF NOT EXISTS notes (
@@ -48,8 +50,7 @@ public class NotesDatabase {
     public ResultSet getNotesByUUID(String uuid) {
         String query = "SELECT * FROM notes WHERE uuid = ?";
         try  {
-            ConsoleCommandSender console = Bukkit.getServer().getConsoleSender();
-            console.sendMessage("[StaffNotes] " + uuid);
+            this.connect();
             PreparedStatement statement = connection.prepareStatement(query);
             statement.setString(1, uuid);
             ResultSet rs = statement.executeQuery();
@@ -62,6 +63,7 @@ public class NotesDatabase {
     public ResultSet getNotesByUUID(String uuid, String noteType) {
         String query = "SELECT * FROM notes WHERE uuid = ? AND notetype = ?";
         try {
+            this.connect();
             PreparedStatement statement = connection.prepareStatement(query);
             statement.setString(1,  uuid);
             statement.setString(2, noteType);
@@ -74,8 +76,9 @@ public class NotesDatabase {
     }
 
     public ResultSet getNotesAll(){
-        String query = "SELECT * FROM notes ORDER BY uuid ASC, id ASC";
+        String query = "SELECT * FROM notes ORDER BY playername ASC, id ASC";
         try{
+            this.connect();
             return connection.createStatement().executeQuery(query);
         } catch (SQLException e){
             e.printStackTrace();
@@ -83,16 +86,10 @@ public class NotesDatabase {
         }
     }
 
-    public boolean verify(int id) throws SQLException{
-        String query = "SELECT 1 FROM notes WHERE id = ?";
-            PreparedStatement statement = connection.prepareStatement(query);
-            statement.setInt(1,id);
-            ResultSet rs = statement.executeQuery();
-            return rs.next();
-    }
 
     public boolean addNote(String playerName, String staffName, String uuid, String noteType, String note) {
         try {
+            this.connect();
             PreparedStatement statement = connection.prepareStatement(
                     "INSERT INTO notes (playername,staffName, uuid, notetype, note) VALUES (?, ?, ?, ?, ?)");
             statement.setString(1, playerName);
@@ -109,7 +106,9 @@ public class NotesDatabase {
         }
 
     }
-    public boolean removeNote(int id) throws SQLException{
+    public boolean removeNote(int id) {
+        try{
+            this.connect();
             PreparedStatement statement = connection.prepareStatement("DELETE FROM notes WHERE id = ?");
             statement.setInt(1, id);
             int rows = statement.executeUpdate();
@@ -118,6 +117,10 @@ public class NotesDatabase {
             } else {
                 return false;
             }
+        } catch (SQLException e){
+            e.printStackTrace();
+            return false;
+        }
     }
 
 }
