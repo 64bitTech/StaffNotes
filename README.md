@@ -24,3 +24,4 @@ notes.view.all&emsp;&emsp;Gives permissions to get all notes
 - Modify depreciated player.sendMessage()
 - Comment code
 - Verify all code paths
+- Handle Bedrock players though Geyser better
