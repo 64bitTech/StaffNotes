@@ -13,14 +13,23 @@ permissions:
     description: Default permission without which the command will not respond
     default: op
   notes.add:
-    description: Allows player to add notes to the database
+    description: Allows staff to add notes to the database
+    default: op
+  notes.add.neverplayed:
+    description: Allows staff to add notes for players who have never joined the server
     default: op
   notes.remove:
-    description: Allows player to remove notes from the database
+    description: Allows staff to remove notes from the database
+    default: op
+  notes.remove.neverplayed:
+    description: Allows staff to remove notes for players that have joined the server
     default: op
   notes.view:
-    description: Allows player to query and view notes in the database
+    description: Allows staff to query and view notes in the database
+    default: op
+  notes.view.neverplayed:
+    description: Allows staff to view notes added for other players that have never played the server (over ridden by notes.view.all)
     default: op
   notes.view.all:
-    description: Allows player to query all notes with no other qualifiers /notes Get All
+    description: Allows staff to query all notes with no other qualifiers /notes Get All
     default: op

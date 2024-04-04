@@ -30,7 +30,7 @@ public class CmdExecuter implements CommandExecutor {
                         sender.sendMessage("§cYou do not have permissions to run this command");
                         return true;
                     } else {
-                        return commands.handleAddCommand((Player) sender, args);
+                        return commands.handleAddCommand((Player) sender, args,sender.hasPermission("notes.add.neverplayed"));
                     }
                 case "get":
                     if (!sender.hasPermission("notes.view")) {
@@ -45,7 +45,7 @@ public class CmdExecuter implements CommandExecutor {
                                 return commands.handleGetCommand((Player) sender);
                             }
                         } else if (args.length >= 2){
-                            return commands.handleGetCommand((Player) sender,args);
+                            return commands.handleGetCommand((Player) sender,args, sender.hasPermission("notes.view.neverplayed"));
                         } else {
                             return false;
                         }
@@ -55,7 +55,7 @@ public class CmdExecuter implements CommandExecutor {
                         sender.sendMessage("§cYou do not have permissions to run this command");
                         return true;
                     } else {
-                        return commands.handleRemoveCommand((Player) sender, args);
+                        return commands.handleRemoveCommand((Player) sender, args, sender.hasPermission("notes.remove.neverplayed"));
                     }
                 default:
                     return false;

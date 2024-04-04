@@ -2,7 +2,7 @@
 NoteTypes:
   - Note
   - BanEvasion
-
+BedrockPrefix: "."
 
 ###########################
 ## String Format Section
@@ -37,6 +37,7 @@ Error2: "§cNo notes found for %PlayerName%"
 Error3: "§cAn error occurred while retrieving notes. Contact an Admin"
 #Error shown for target player not found
 Error4: "§c%PlayerName% does not exist, make sure you typed the name correctly"
+Error5: "§c%PlayerName% has not joined the server before"
 ErrorPermissions: "§cYou do not have permissions to run this command"
 
 #Strings specifically for the removal processes

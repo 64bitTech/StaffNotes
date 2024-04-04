@@ -1,5 +1,7 @@
 package com.staffnotes.commands;
 
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import com.staffnotes.StaffNotes;
 import com.staffnotes.classes.InfoClass;
 import com.staffnotes.classes.NotesDatabase;
@@ -8,6 +10,10 @@ import org.bukkit.OfflinePlayer;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
@@ -15,9 +21,11 @@ import java.util.Arrays;
 import java.util.ArrayList;
 import java.util.Date;
 
+import java.util.logging.Logger;
+
 public class Commands {
     private FileConfiguration config;
-
+    //private Logger logger;
     private InfoClass activity;
     private NotesDatabase notesDatabase;
     public InfoClass getActivity(){
@@ -26,10 +34,11 @@ public class Commands {
     public Commands(StaffNotes plugin){
         this.notesDatabase = plugin.getNotesDatabase();
         this.config = plugin.getConfig();
+        //this.logger = plugin.getLogger();
     }
 
 
-    public boolean handleAddCommand(Player player, String[] args) {
+    public boolean handleAddCommand(Player player, String[] args, boolean neverPlayed) {
         // Implement logic for /notes add subcommand
         String playerName = args[1];
         String noteType = "";
@@ -52,7 +61,7 @@ public class Commands {
             return false;
         }
         String[] playerInfo;
-        playerInfo = getplayerInfo(playerName);
+        playerInfo = getplayerInfo(playerName, neverPlayed);
         if (playerInfo == null) {
             player.sendMessage(config.getString("Error4").replace("%PlayerName%",playerInfo[0]));
             return true;
@@ -72,9 +81,9 @@ public class Commands {
     }
     public boolean handleGetCommand(Player player) {
         // overload handleGetCommand for 0 args and /Notes Get All
-        return handleGetCommand(player,null);
+        return handleGetCommand(player,null, true);
     }
-    public boolean handleGetCommand(Player player, String[] args) {
+    public boolean handleGetCommand(Player player, String[] args, boolean neverPlayed) {
         // Implement logic for /notes get subcommand
         // Example: /notes get <playername>
         //args[1] stores entered PlayerName
@@ -86,7 +95,7 @@ public class Commands {
         String[] playerInfo = {"All Players","none"};
 
         if (args != null) {
-            playerInfo = getplayerInfo(args[1]);
+            playerInfo = getplayerInfo(args[1],neverPlayed);
             String noteType = "";
             List<String> noteTypes = config.getStringList("NoteTypes");
             if (playerInfo != null) {
@@ -108,6 +117,9 @@ public class Commands {
                     // get notes by UUID only
                     rs = notesDatabase.getNotesByUUID(playerInfo[1].toString());
                 }
+            } else {
+                player.sendMessage(config.getString("Error5").replace("%PlayerName%",args[1]));
+                return true;
             }
         } else {
             rs = notesDatabase.getNotesAll();
@@ -140,7 +152,7 @@ public class Commands {
         }
     }
 
-    public boolean handleRemoveCommand(Player player, String[] args) {
+    public boolean handleRemoveCommand(Player player, String[] args, boolean neverPlayed) {
         // Implement logic for /notes remove subcommand
         // Example: /notes remove <playername>
         // args[1] contains target PlayerName
@@ -151,7 +163,7 @@ public class Commands {
             player.sendMessage(config.getString("ErrorPlayerReq"));
             return true;
         }
-        String[] playerInfo = getplayerInfo(args[1]); // get name and UUID of entered player name
+        String[] playerInfo = getplayerInfo(args[1], neverPlayed); // get name and UUID of entered player name
         List<Integer> dataKeys = new ArrayList<Integer>();
         List<String> noteTypes = config.getStringList("NoteTypes");
         String noteType = "";
@@ -266,18 +278,42 @@ public class Commands {
             player.sendMessage(config.getString("FailedRemove2"));
         }
     }
-    private String[] getplayerInfo(String playerName) {
+    private String[] getplayerInfo(String playerName,boolean neverplayed) {
         // Gets info for specific player name from Buikkit OfflinePlayer API
         // Playername can return Null but UUID should always be available
         // returns string array where 0 = Name returned by API or playername input if null
         // 1 = UUID
         String[] ret = new String[2];
         OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayer(playerName);
-        ret[0] = offlinePlayer.getName();
-        if (ret[0] == null){
-            ret[0] = playerName;
+        if (offlinePlayer != null) {
+            if (!offlinePlayer.hasPlayedBefore() && !neverplayed) return null;
+            if (playerName.startsWith(config.getString("BedrockPrefix"))) return getplayerInfoBedrock(playerName);
+            ret[0] = offlinePlayer.getName();
+            if (ret[0] == null) {
+                ret[0] = playerName;
+            }
+            ret[1] = offlinePlayer.getUniqueId().toString().replace("-", "");
         }
-        ret[1] = offlinePlayer.getUniqueId().toString().replace("-","");
         return ret;
+    }
+    private String[] getplayerInfoBedrock(String playerName){
+        // Used to get BedrockPlayer UUID if player has not been seen on the server before
+        // Impliments Geyser WebAPI v2
+        // returns string array where 0 = Name returned by API
+        // 1 = UUID
+        String[] ret = new String[2];
+        try {
+            String url = String.format("https://api.geysermc.org/v2/utils/uuid/bedrock_or_java/%1$s?prefix=%2$s", playerName, config.getString("BedrockPrefix"));
+            JsonObject jsonObject = JsonParser.parseReader(new InputStreamReader(new URL(url).openStream())).getAsJsonObject();
+            ret[0] = jsonObject.get("name").getAsString();
+            ret[1] = jsonObject.get("id").getAsString();
+            return ret;
+        }catch (MalformedURLException e){
+            e.printStackTrace();
+            return null;
+        } catch (IOException e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 }
