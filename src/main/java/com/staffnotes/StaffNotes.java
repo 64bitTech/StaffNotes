@@ -3,7 +3,6 @@ import com.staffnotes.Listeners.ChatListener;
 import com.staffnotes.classes.NotesDatabase;
 import com.staffnotes.Listeners.TabComplete;
 import com.staffnotes.Listeners.CmdExecuter;
-import com.staffnotes.commands.Commands;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -13,29 +12,13 @@ import java.io.File;
 import java.sql.SQLException;
 
 public final class StaffNotes extends JavaPlugin {
-    private FileConfiguration config;
-    private final NotesDatabase notesDatabase = new NotesDatabase(this);
-    private ChatListener chatListener = new ChatListener(this);
-    public NotesDatabase getNotesDatabase(){
-        return this.notesDatabase;
-    }
-    public Commands getCommands(){
-        return this.commands;
-    }
-    public FileConfiguration getConfig(){
-        return config;
-    }
-
-    private Commands commands;
-    public ChatListener getChatListener() {
-        return chatListener;
-    }
+    public static FileConfiguration config;
 
     @Override
     public void onEnable() {
         getLogger().info("[StaffNotes] plugin is being enabled...");
         reloadConfig();
-        commands = new Commands(this);
+        NotesDatabase.setdbLocation(getDataFolder().toPath().resolve("StaffNotes.db"));
         // Register command
         File dataFolder = getDataFolder();
         if (!dataFolder.exists()) {
@@ -48,11 +31,11 @@ public final class StaffNotes extends JavaPlugin {
         } else {
             getLogger().info("[StaffNotes]Directory already exists: " + dataFolder.getAbsolutePath());
         }
-        this.getCommand("notes").setExecutor(new CmdExecuter(this));
-        this.getCommand("notes").setTabCompleter(new TabComplete(this));
-        Bukkit.getPluginManager().registerEvents(chatListener, this);
+        this.getCommand("notes").setExecutor(new CmdExecuter());
+        this.getCommand("notes").setTabCompleter(new TabComplete());
+        Bukkit.getPluginManager().registerEvents(new ChatListener(), this);
         try {
-            notesDatabase.connect();
+            NotesDatabase.connect();
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -63,7 +46,7 @@ public final class StaffNotes extends JavaPlugin {
     public void onDisable() {
         getLogger().info("[StaffNotes] plugin is being disabled...");
         try {
-            notesDatabase.disconnect();
+            NotesDatabase.disconnect();
         } catch (SQLException e) {
             e.printStackTrace();
         }

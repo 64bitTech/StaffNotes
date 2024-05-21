@@ -5,22 +5,17 @@ import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
-import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import java.util.ArrayList;
 import java.util.List;
 
 public class TabComplete implements TabCompleter {
 
-    private FileConfiguration config;
-    public TabComplete(StaffNotes plugin){
-        this.config = plugin.getConfig();
-    }
     @Override
     public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
         if (!sender.hasPermission("notes.default")) return null;
         List<String> completions = new ArrayList<>();
-        List<String> noteTypes = config.getStringList("NoteTypes");
+        List<String> noteTypes = StaffNotes.config.getStringList("NoteTypes");
 
         if (args.length == 1) {
             // Tab complete player names if the first argument is empty

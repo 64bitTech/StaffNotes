@@ -1,0 +1,35 @@
+name: StaffNotes
+version: 0.2
+api-version: '1.20'
+main: com.staffnotes.StaffNotes
+
+commands:
+  notes:
+    description: My notes command
+    usage: /notes <add | get | remove | help> <playername> <notetype> <note>
+
+permissions:
+  notes.default:
+    description: Default permission without which the command will not respond
+    default: op
+  notes.add:
+    description: Allows staff to add notes to the database
+    default: op
+  notes.add.neverplayed:
+    description: Allows staff to add notes for players who have never joined the server
+    default: op
+  notes.remove:
+    description: Allows staff to remove notes from the database
+    default: op
+  notes.remove.neverplayed:
+    description: Allows staff to remove notes for players that have joined the server
+    default: op
+  notes.view:
+    description: Allows staff to query and view notes in the database
+    default: op
+  notes.view.neverplayed:
+    description: Allows staff to view notes added for other players that have never played the server (over ridden by notes.view.all)
+    default: op
+  notes.view.all:
+    description: Allows staff to query all notes with no other qualifiers /notes Get All
+    default: op

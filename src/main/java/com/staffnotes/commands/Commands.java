@@ -2,12 +2,11 @@ package com.staffnotes.commands;
 
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import com.staffnotes.StaffNotes;
-import com.staffnotes.classes.InfoClass;
+import com.staffnotes.classes.ActivityClass;
+import com.staffnotes.classes.ActivityStore;
 import com.staffnotes.classes.NotesDatabase;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
-import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 
 import java.io.IOException;
@@ -21,24 +20,12 @@ import java.util.Arrays;
 import java.util.ArrayList;
 import java.util.Date;
 
-import java.util.logging.Logger;
+
+import static com.staffnotes.StaffNotes.config;
 
 public class Commands {
-    private FileConfiguration config;
-    //private Logger logger;
-    private InfoClass activity;
-    private NotesDatabase notesDatabase;
-    public InfoClass getActivity(){
-        return this.activity;
-    }
-    public Commands(StaffNotes plugin){
-        this.notesDatabase = plugin.getNotesDatabase();
-        this.config = plugin.getConfig();
-        //this.logger = plugin.getLogger();
-    }
 
-
-    public boolean handleAddCommand(Player player, String[] args, boolean neverPlayed) {
+    public static boolean handleAddCommand(Player player, String[] args, boolean neverPlayed) {
         // Implement logic for /notes add subcommand
         String playerName = args[1];
         String noteType = "";
@@ -70,7 +57,7 @@ public class Commands {
         String note = String.join(" ", Arrays.copyOfRange(args, 3, args.length));
 
         // Insert note into database
-        boolean ret = notesDatabase.addNote(playerInfo[0],player.getName(), playerInfo[1], noteType, note);
+        boolean ret = NotesDatabase.addNote(playerInfo[0],player.getName(), playerInfo[1], noteType, note);
         if (ret) {
             player.sendMessage(config.getString("SuccessAdd").replace("%PlayerName%",playerInfo[0]));
             return true;
@@ -79,11 +66,11 @@ public class Commands {
             return false;
         }
     }
-    public boolean handleGetCommand(Player player) {
+    public static boolean handleGetCommand(Player player) {
         // overload handleGetCommand for 0 args and /Notes Get All
         return handleGetCommand(player,null, true);
     }
-    public boolean handleGetCommand(Player player, String[] args, boolean neverPlayed) {
+    public static boolean handleGetCommand(Player player, String[] args, boolean neverPlayed) {
         // Implement logic for /notes get subcommand
         // Example: /notes get <playername>
         //args[1] stores entered PlayerName
@@ -112,17 +99,17 @@ public class Commands {
                         return true;
                     }
                     // get notes by UUID and NoteType
-                    rs = notesDatabase.getNotesByUUID(playerInfo[1].toString(), args[2]);
+                    rs = NotesDatabase.getNotesByUUID(playerInfo[1].toString(), args[2]);
                 } else {
                     // get notes by UUID only
-                    rs = notesDatabase.getNotesByUUID(playerInfo[1].toString());
+                    rs = NotesDatabase.getNotesByUUID(playerInfo[1].toString());
                 }
             } else {
                 player.sendMessage(config.getString("Error5").replace("%PlayerName%",args[1]));
                 return true;
             }
         } else {
-            rs = notesDatabase.getNotesAll();
+            rs = NotesDatabase.getNotesAll();
         }
         try {
             if (rs != null) {
@@ -152,7 +139,7 @@ public class Commands {
         }
     }
 
-    public boolean handleRemoveCommand(Player player, String[] args, boolean neverPlayed) {
+    public static boolean handleRemoveCommand(Player player, String[] args, boolean neverPlayed) {
         // Implement logic for /notes remove subcommand
         // Example: /notes remove <playername>
         // args[1] contains target PlayerName
@@ -190,9 +177,9 @@ public class Commands {
                 ResultSet rs;
                 // query database by UUID or UUID and NoteType
                 if (args.length == 3) {
-                    rs = notesDatabase.getNotesByUUID(playerInfo[1].toString(),args[2]);
+                    rs = NotesDatabase.getNotesByUUID(playerInfo[1].toString(),args[2]);
                 } else {
-                    rs = notesDatabase.getNotesByUUID(playerInfo[1].toString());
+                    rs = NotesDatabase.getNotesByUUID(playerInfo[1].toString());
                 }
                 if (rs == null) return false;
                 // if notes exists parse though them and send to player so they can choose what note to remove
@@ -214,7 +201,7 @@ public class Commands {
                 }
                 if (hasData) {
                     // if notes were found set Activity monitored by chatListener so it will now listen for the player to type a note ID
-                    activity = new InfoClass(player, "remove", dataKeys);
+                    ActivityStore.setActivity(player.getUniqueId(),new ActivityClass("remove",dataKeys));
                     player.sendMessage(config.getString("Info"));
                     player.sendMessage(config.getString("Info2"));
                     return true;
@@ -236,12 +223,12 @@ public class Commands {
         }
     }
 
-    public void handleChat(Player player,String noteID) {
+    public static void handleChat(Player player,String noteID) {
         // executed by ChatListener if activity is remove
         // listens for player to type ID of the note they want removed
         if (noteID.toLowerCase().contains("cancel")) {
             player.sendMessage(config.getString("Canceled"));
-            activity = null;
+            ActivityStore.removeActivity(player.getUniqueId());
             return;
         }
 
@@ -252,24 +239,24 @@ public class Commands {
         } catch (NumberFormatException e) {
             // fail and cancel if anything else has been entered
             player.sendMessage(config.getString("Canceled2"));
-            activity = null;
+            ActivityStore.removeActivity(player.getUniqueId());
             return;
         }
         // parse though list of possible ID's to prevent player from removing a note from another row by accident
         // would have used ResultSet here but Sqlite doesn't allow row seek
-        List<Integer> rs = activity.dataKeys();
+        List<Integer> rs = ActivityStore.getActivity(player.getUniqueId()).getDataKeys();
         if (rs != null) {
             for (int x : rs) {
                 if (i == x) {
                     // if players entered value is found in the list of available values remove the row
-                    if (notesDatabase.removeNote(i)) {
+                    if (NotesDatabase.removeNote(i)) {
                         player.sendMessage(config.getString("SuccessRemove"));
-                        activity = null;
+                        ActivityStore.removeActivity(player.getUniqueId());
                         return;
                     } else {
                         // notify player if remove fails from database and resets the activity
                         player.sendMessage(config.getString("FailedRemove"));
-                        activity = null;
+                        ActivityStore.removeActivity(player.getUniqueId());
                         return;
                     }
                 }
@@ -278,7 +265,7 @@ public class Commands {
             player.sendMessage(config.getString("FailedRemove2"));
         }
     }
-    private String[] getplayerInfo(String playerName,boolean neverplayed) {
+    private static String[] getplayerInfo(String playerName,boolean neverplayed) {
         // Gets info for specific player name from Buikkit OfflinePlayer API
         // Playername can return Null but UUID should always be available
         // returns string array where 0 = Name returned by API or playername input if null
@@ -296,7 +283,7 @@ public class Commands {
         }
         return ret;
     }
-    private String[] getplayerInfoBedrock(String playerName){
+    private static String[] getplayerInfoBedrock(String playerName){
         // Used to get BedrockPlayer UUID if player has not been seen on the server before
         // Impliments Geyser WebAPI v2
         // returns string array where 0 = Name returned by API

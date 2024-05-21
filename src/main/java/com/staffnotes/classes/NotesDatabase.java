@@ -1,36 +1,32 @@
 package com.staffnotes.classes;
 
+import java.nio.file.Path;
 import java.sql.*;
-import org.bukkit.Bukkit;
-import org.bukkit.command.ConsoleCommandSender;
-import org.bukkit.plugin.java.JavaPlugin;
 
 public class NotesDatabase {
-    private final JavaPlugin plugin;
-    private Connection connection;
 
-
-    public NotesDatabase(JavaPlugin plugin) {
-        this.plugin = plugin;
+    private static Connection connection;
+    private static Path dbLocation;
+    public static void setdbLocation(Path path){
+        dbLocation = path;
     }
-
-    public void connect() throws SQLException {
+    public static void connect() throws SQLException {
         // connect to database if not already connected
         if (connection != null && !connection.isClosed()) {
             return;
         }
-        connection = DriverManager.getConnection("jdbc:sqlite:" + plugin.getDataFolder().toPath().resolve("StaffNotes.db"));
+        connection = DriverManager.getConnection("jdbc:sqlite:" + dbLocation);
         createTable();
     }
 
-    public void disconnect() throws SQLException {
+    public static void disconnect() throws SQLException {
         // disconnect from database
         if (connection != null && !connection.isClosed()) {
             connection.close();
         }
     }
 
-    private void createTable() throws SQLException {
+    private static void createTable() throws SQLException {
         // create blank table if database was just created
         try (PreparedStatement statement = connection.prepareStatement(
                 """
@@ -47,10 +43,10 @@ public class NotesDatabase {
             statement.executeUpdate();
         }
     }
-    public ResultSet getNotesByUUID(String uuid) {
+    public static ResultSet getNotesByUUID(String uuid) {
         String query = "SELECT * FROM notes WHERE uuid = ?";
         try  {
-            this.connect();
+            connect();
             PreparedStatement statement = connection.prepareStatement(query);
             statement.setString(1, uuid);
             ResultSet rs = statement.executeQuery();
@@ -60,10 +56,10 @@ public class NotesDatabase {
             return null;
         }
     }
-    public ResultSet getNotesByUUID(String uuid, String noteType) {
+    public static ResultSet getNotesByUUID(String uuid, String noteType) {
         String query = "SELECT * FROM notes WHERE uuid = ? AND notetype = ?";
         try {
-            this.connect();
+            connect();
             PreparedStatement statement = connection.prepareStatement(query);
             statement.setString(1,  uuid);
             statement.setString(2, noteType);
@@ -75,10 +71,10 @@ public class NotesDatabase {
         }
     }
 
-    public ResultSet getNotesAll(){
+    public static ResultSet getNotesAll(){
         String query = "SELECT * FROM notes ORDER BY playername ASC, id ASC";
         try{
-            this.connect();
+            connect();
             return connection.createStatement().executeQuery(query);
         } catch (SQLException e){
             e.printStackTrace();
@@ -87,9 +83,9 @@ public class NotesDatabase {
     }
 
 
-    public boolean addNote(String playerName, String staffName, String uuid, String noteType, String note) {
+    public static boolean addNote(String playerName, String staffName, String uuid, String noteType, String note) {
         try {
-            this.connect();
+            connect();
             PreparedStatement statement = connection.prepareStatement(
                     "INSERT INTO notes (playername,staffName, uuid, notetype, note) VALUES (?, ?, ?, ?, ?)");
             statement.setString(1, playerName);
@@ -106,9 +102,9 @@ public class NotesDatabase {
         }
 
     }
-    public boolean removeNote(int id) {
+    public static boolean removeNote(int id) {
         try{
-            this.connect();
+            connect();
             PreparedStatement statement = connection.prepareStatement("DELETE FROM notes WHERE id = ?");
             statement.setInt(1, id);
             int rows = statement.executeUpdate();

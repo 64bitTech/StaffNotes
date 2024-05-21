@@ -1,0 +1,15 @@
+<component name="ArtifactManager">
+  <artifact name="CompileJar">
+    <output-path>$PROJECT_DIR$/../../Server/debug/spigot/plugins</output-path>
+    <root id="root">
+      <element id="archive" name="com.StaffNotes.main.jar">
+        <element id="module-output" name="com.StaffNotes.main" />
+        <element id="directory" name="META-INF">
+          <element id="file-copy" path="$PROJECT_DIR$/src/main/java/META-INF/MANIFEST.MF" />
+        </element>
+        <element id="file-copy" path="$PROJECT_DIR$/src/main/resources/config.yml" />
+        <element id="file-copy" path="$PROJECT_DIR$/src/main/resources/plugin.yml" />
+      </element>
+    </root>
+  </artifact>
+</component>
